@@ -7,6 +7,8 @@ import com.example.phonecontacts2.enums.UserRole;
 import com.example.phonecontacts2.repository.ContactRepository;
 import com.example.phonecontacts2.repository.RoleRepository;
 import com.example.phonecontacts2.repository.UserRepository;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -15,11 +17,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -52,8 +57,10 @@ public class ContactControllerIntegrationTest {
         // Ініціалізуємо дані для тестів
         User user = new User();
         user.setId(1L);
-        user.setLogin("awafawfawfawf");
-        user.setPassword("awfawfawf");
+        user.setLogin("testuser");
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        String encodedPassword = passwordEncoder.encode("testpassword");
+        user.setPassword(encodedPassword);
         Role role = new Role(UserRole.USER_ROLE);
         roleRepository.save(role);
         user.getRoles().add(role);
@@ -82,9 +89,24 @@ public class ContactControllerIntegrationTest {
         contact.setEmails(emails);
         contact.setOwnerOfContact(userRepository.getById(userId));
 
+        String username = "testuser";
+        String password = "testpassword";
+        String secretKey = "finalProject";
+        String token = Jwts.builder()
+                .setSubject(username)
+                .signWith(SignatureAlgorithm.HS256, secretKey)
+                .compact();
+//        String base64Credentials = Base64.getEncoder().encodeToString((username + ":" + password).getBytes());
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.add("Authorization", "Bearer " + token);
+
+        HttpEntity<Contact> requestEntity = new HttpEntity<>(contact, headers);
+
         // Act
         ResponseEntity<Void> response = restTemplate.postForEntity(getBaseUrl() + "/add-new-contact?userId=" + userId,
-                contact, Void.class);
+                requestEntity, Void.class);
 
         // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
