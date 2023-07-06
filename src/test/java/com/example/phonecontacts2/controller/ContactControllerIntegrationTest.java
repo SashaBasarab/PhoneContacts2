@@ -124,17 +124,51 @@ public class ContactControllerIntegrationTest {
         // Arrange
         Long contactId = 1L;
         Contact existingContact = new Contact();
+        Long userId = 1L;
+        existingContact.setId(1L);
+        existingContact.setName("TestContact");
+        List<String> phoneNumbers = new ArrayList<>();
+        phoneNumbers.add("+380950055258");
+        existingContact.setPhoneNumbers(phoneNumbers);
+        List<String> emails = new ArrayList<>();
+        emails.add("testemail@gmail.com");
+        existingContact.setEmails(emails);
+        existingContact.setOwnerOfContact(userRepository.getById(userId));
         // Заповнюємо дані існуючого контакту
         // ...
         contactRepository.save(existingContact);
 
         Contact updatedContact = new Contact();
+
+        updatedContact.setId(existingContact.getId());
+        updatedContact.setName("TestContact2");
+        List<String> newPhoneNumbers = new ArrayList<>();
+        newPhoneNumbers.add("+380950055254");
+        updatedContact.setPhoneNumbers(newPhoneNumbers);
+        List<String> newEmails = new ArrayList<>();
+        newEmails.add("testemailll@gmail.com");
+        updatedContact.setEmails(newEmails);
+        updatedContact.setOwnerOfContact(existingContact.getOwnerOfContact());
         // Заповнюємо дані оновленого контакту
         // ...
 
+        String username = "testuser";
+        String password = "testpassword";
+        String secretKey = "finalProject";
+        String token = Jwts.builder()
+                .setSubject(username)
+                .signWith(SignatureAlgorithm.HS256, secretKey)
+                .compact();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.add("Authorization", "Bearer " + token);
+
+        HttpEntity<Contact> requestEntity = new HttpEntity<>(updatedContact, headers);
+
         // Act
         restTemplate.put(getBaseUrl() + "/edit-contact?contactId=" + contactId,
-                updatedContact);
+                requestEntity);
 
         // Assert
         // Перевіряємо, чи контакт був оновлений в базі даних
