@@ -38,26 +38,7 @@ public class ContactServiceImpl implements ContactService {
     public void addContact(Contact contact, Long userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new NoSuchUserException("User with id: " + userId + " does not exist!"));
         contact.setOwnerOfContact(user);
-        List<Contact> existingContactsOfUser = contactRepository.findAllByOwnerOfContact(user);
-        for (Contact existingContact : existingContactsOfUser) {
-            if (existingContact.getName().equals(contact.getName())) {
-                throw new UserWithProvidedContactNameAlreadyExists("User with contact name: " + contact.getName() + " already exists!");
-            }
-            for (String existingEmail : existingContact.getEmails()) {
-                for (String requestEmail: contact.getEmails()) {
-                    if (existingEmail.equals(requestEmail)) {
-                        throw new UserWithProvidedEmailsAlreadyExists("User with email: " + requestEmail + " already exists!");
-                    }
-                }
-            }
-            for (String existingPhoneNumber : existingContact.getPhoneNumbers()) {
-                for (String requestPhoneNumber: contact.getPhoneNumbers()) {
-                    if (existingPhoneNumber.equals(requestPhoneNumber)) {
-                        throw new UserWithProvidedPhoneNumbersAlreadyExists("User with phone number: " + requestPhoneNumber + " already exists!");
-                    }
-                }
-            }
-        }
+        checkIfUnique(user, contact);
         contactRepository.save(contact);
     }
 
@@ -66,6 +47,16 @@ public class ContactServiceImpl implements ContactService {
         Contact updatedContact = contactRepository.findById(contactId)
                 .orElseThrow(() -> new NoSuchContactException("Contact with id: " + contactId + " does not exist!"));
         User user = userRepository.findById(userId).orElseThrow(() -> new NoSuchUserException("User with id: " + userId + " does not exist!"));
+        checkIfUnique(user, contact);
+        updatedContact.setName(contact.getName());
+        updatedContact.setEmails(contact.getEmails());
+        updatedContact.setPhoneNumbers(contact.getPhoneNumbers());
+        updatedContact.setOwnerOfContact(user);
+        contactRepository.save(updatedContact);
+    }
+
+
+    private void checkIfUnique(User user, Contact contact) {
         List<Contact> existingContactsOfUser = contactRepository.findAllByOwnerOfContact(user);
         for (Contact existingContact : existingContactsOfUser) {
             if (existingContact.getName().equals(contact.getName())) {
@@ -86,12 +77,6 @@ public class ContactServiceImpl implements ContactService {
                 }
             }
         }
-        updatedContact.setName(contact.getName());
-        updatedContact.setEmails(contact.getEmails());
-        updatedContact.setPhoneNumbers(contact.getPhoneNumbers());
-        updatedContact.setOwnerOfContact(user);
-        contactRepository.save(updatedContact);
-
     }
 
     @Override
