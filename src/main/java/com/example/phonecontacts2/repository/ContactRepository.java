@@ -11,5 +11,4 @@ import java.util.Optional;
 @Repository
 public interface ContactRepository extends JpaRepository<Contact, Long> {
     List<Contact> findAllByOwnerOfContact(User user);
-    Optional<Contact> findByNameAndOwnerOfContact(String name, User ownerOfContact);
 }

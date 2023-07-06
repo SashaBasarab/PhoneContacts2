@@ -1,5 +1,6 @@
 package com.example.phonecontacts2.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -24,6 +25,7 @@ public class Contact {
     @ElementCollection
     private List<@Pattern(regexp = "\\+380\\d{9}", message = "Phone number must be in the format +380XXXXXXXXX")String> phoneNumbers;
 
+    @JsonIgnore
     @ManyToOne
     private User ownerOfContact;
 
