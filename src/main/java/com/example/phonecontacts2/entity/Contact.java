@@ -1,12 +1,11 @@
 package com.example.phonecontacts2.entity;
 
-import jakarta.persistence.*;
-
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.persistence.*;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.Pattern;
 import java.util.List;
 
 @Entity
