@@ -38,7 +38,6 @@ public class UserDetailsServiceImplTest {
 
     @Test
     public void testLoadUserByUsername_ExistingUser() {
-        // Arrange
         String login = "testuser";
         User user = new User();
         user.setLogin(login);
@@ -48,10 +47,8 @@ public class UserDetailsServiceImplTest {
 
         Mockito.when(userRepository.findByLogin(login)).thenReturn(Optional.of(user));
 
-        // Act
         UserDetails userDetails = userDetailsService.loadUserByUsername(login);
 
-        // Assert
         Assert.assertNotNull(userDetails);
         Assert.assertEquals(login, userDetails.getUsername());
         Assert.assertEquals(user.getPassword(), userDetails.getPassword());
@@ -63,15 +60,11 @@ public class UserDetailsServiceImplTest {
 
     @Test(expected = NoSuchUserException.class)
     public void testLoadUserByUsername_NonExistingUser() {
-        // Arrange
         String login = "testuser";
 
         Mockito.when(userRepository.findByLogin(login)).thenReturn(Optional.empty());
 
-        // Act
         userDetailsService.loadUserByUsername(login);
-
-        // The NoSuchUserException should be thrown
 
         Mockito.verify(userRepository, Mockito.times(1)).findByLogin(login);
     }

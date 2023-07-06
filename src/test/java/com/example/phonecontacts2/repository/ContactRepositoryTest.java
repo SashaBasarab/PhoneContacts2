@@ -39,21 +39,21 @@ public class ContactRepositoryTest {
 
     @Test
     public void testFindAllByOwnerOfContact() {
-        // Arrange
         User user = new User();
-        // Set up any necessary data for the test
+        user.setId(1L);
 
         List<Contact> expectedContacts = new ArrayList<>();
-        // Set up the expected contacts list
+        Contact contact = new Contact();
+        contact.setOwnerOfContact(user);
+        contactRepository.save(contact);
+        expectedContacts.add(contact);
 
-        // Mock the contactRepository method
         Mockito.when(contactRepository.findAllByOwnerOfContact(Mockito.eq(user))).thenReturn(expectedContacts);
 
-        // Act
         List<Contact> result = contactRepository.findAllByOwnerOfContact(user);
 
-        // Assert
         Assert.assertEquals(expectedContacts, result);
         Mockito.verify(contactRepository).findAllByOwnerOfContact(user);
+        contactRepository.delete(contact);
     }
 }

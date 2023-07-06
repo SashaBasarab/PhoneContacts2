@@ -54,7 +54,6 @@ public class ContactControllerIntegrationTest {
 
     @Before
     public void setup() {
-        // Ініціалізуємо дані для тестів
         User user = new User();
         user.setId(1L);
         user.setLogin("testuser");
@@ -76,7 +75,6 @@ public class ContactControllerIntegrationTest {
 
     @Test
     public void testAddNewContact() {
-        // Arrange
         Long userId = 1L;
         Contact contact = new Contact();
         contact.setId(1L);
@@ -96,7 +94,6 @@ public class ContactControllerIntegrationTest {
                 .setSubject(username)
                 .signWith(SignatureAlgorithm.HS256, secretKey)
                 .compact();
-//        String base64Credentials = Base64.getEncoder().encodeToString((username + ":" + password).getBytes());
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -104,24 +101,18 @@ public class ContactControllerIntegrationTest {
 
         HttpEntity<Contact> requestEntity = new HttpEntity<>(contact, headers);
 
-        // Act
         ResponseEntity<Void> response = restTemplate.postForEntity(getBaseUrl() + "/add-new-contact?userId=" + userId,
                 requestEntity, Void.class);
 
-        // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        // Перевіряємо, чи контакт був збережений в базі даних
         List<Contact> savedContacts = contactRepository.findAllByOwnerOfContact(userRepository.findById(userId).get());
         assertEquals(1, savedContacts.size());
-        // Перевіряємо, чи дані контакту співпадають з вхідними даними
         Contact savedContact = savedContacts.get(0);
         assertEquals(contact.getName(), savedContact.getName());
-        // ...
     }
 
     @Test
     public void testUpdateContact() {
-        // Arrange
         Long contactId = 1L;
         Contact existingContact = new Contact();
         Long userId = 1L;
@@ -134,8 +125,6 @@ public class ContactControllerIntegrationTest {
         emails.add("testemail@gmail.com");
         existingContact.setEmails(emails);
         existingContact.setOwnerOfContact(userRepository.getById(userId));
-        // Заповнюємо дані існуючого контакту
-        // ...
         contactRepository.save(existingContact);
 
         Contact updatedContact = new Contact();
@@ -149,9 +138,6 @@ public class ContactControllerIntegrationTest {
         newEmails.add("testemailll@gmail.com");
         updatedContact.setEmails(newEmails);
         updatedContact.setOwnerOfContact(existingContact.getOwnerOfContact());
-        // Заповнюємо дані оновленого контакту
-        // ...
-
         String username = "testuser";
         String password = "testpassword";
         String secretKey = "finalProject";
@@ -166,17 +152,12 @@ public class ContactControllerIntegrationTest {
 
         HttpEntity<Contact> requestEntity = new HttpEntity<>(updatedContact, headers);
 
-        // Act
-        restTemplate.put(getBaseUrl() + "/edit-contact?contactId=" + contactId,
+        restTemplate.put(getBaseUrl() + "/edit-contact?contactId=" + contactId + "&userId=" + userId,
                 requestEntity);
 
-        // Assert
-        // Перевіряємо, чи контакт був оновлений в базі даних
         Contact savedContact = contactRepository.findById(contactId).orElse(null);
         assertNotNull(savedContact);
-        // Перевіряємо, чи дані контакту співпадають з оновленими даними
         assertEquals(updatedContact.getName(), savedContact.getName());
-        // ...
     }
 
 }

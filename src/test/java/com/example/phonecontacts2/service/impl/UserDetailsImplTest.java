@@ -18,7 +18,6 @@ public class UserDetailsImplTest {
 
     @Test
     public void testGetAuthorities() {
-        // Arrange
         Role role1 = new Role(UserRole.USER_ROLE);
         Role role2 = new Role(UserRole.ADMIN_ROLE);
         Set<Role> roles = new HashSet<>();
@@ -31,11 +30,9 @@ public class UserDetailsImplTest {
         user.setPassword("testpassword");
         user.setRoles(roles);
 
-        // Act
         UserDetailsImpl userDetails = UserDetailsImpl.build(user);
         Collection<? extends GrantedAuthority> authorities = userDetails.getAuthorities();
 
-        // Assert
         Assert.assertNotNull(authorities);
         Assert.assertEquals(2, authorities.size());
         Assert.assertTrue(authorities.contains(new SimpleGrantedAuthority("USER_ROLE")));
@@ -44,30 +41,23 @@ public class UserDetailsImplTest {
 
     @Test
     public void testGetPassword() {
-        // Arrange
         String password = "testpassword";
         UserDetailsImpl userDetails = new UserDetailsImpl(1L, "testuser", password, Collections.emptyList());
 
-        // Act
         String actualPassword = userDetails.getPassword();
 
-        // Assert
         Assert.assertEquals(password, actualPassword);
     }
 
     @Test
     public void testGetUsername() {
-        // Arrange
         String username = "testuser";
         UserDetailsImpl userDetails = new UserDetailsImpl(1L, username, "testpassword", Collections.emptyList());
 
-        // Act
         String actualUsername = userDetails.getUsername();
 
-        // Assert
         Assert.assertEquals(username, actualUsername);
     }
 
-    // Add more test cases for the other methods in UserDetailsImpl
 
 }

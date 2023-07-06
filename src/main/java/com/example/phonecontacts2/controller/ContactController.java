@@ -26,9 +26,10 @@ public class ContactController {
 
     @PutMapping("/edit-contact")
     public void updateContact(@RequestParam Long contactId,
+                              @RequestParam Long userId,
                               @Valid @RequestBody Contact contact) {
         log.info("\nRequest: Name: {},\nEmails: {}, \nphoneNumbers: {}, \ncontactId: {}", contact.getName(), contact.getEmails(), contact.getPhoneNumbers(), contactId);
-        contactService.updateContact(contactId, contact);
+        contactService.updateContact(contactId, contact, userId);
     }
 
     @DeleteMapping("/delete-contact")

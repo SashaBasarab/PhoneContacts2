@@ -34,7 +34,6 @@ public class ContactServiceImplTest {
 
     @Test
     public void testGetAllContacts() {
-        // Arrange
         Long userId = 1L;
         User user = new User();
         user.setId(userId);
@@ -46,32 +45,26 @@ public class ContactServiceImplTest {
         Mockito.when(userRepository.findById(userId)).thenReturn(Optional.of(user));
         Mockito.when(contactRepository.findAllByOwnerOfContact(user)).thenReturn(expectedContacts);
 
-        // Act
         List<Contact> actualContacts = contactService.getAllContacts(userId);
 
-        // Assert
         Assert.assertEquals(expectedContacts, actualContacts);
     }
 
     @Test
     public void testGetContactById() {
-        // Arrange
         Long contactId = 1L;
         Contact expectedContact = new Contact();
         expectedContact.setId(contactId);
 
         Mockito.when(contactRepository.findById(contactId)).thenReturn(Optional.of(expectedContact));
 
-        // Act
         Contact actualContact = contactService.getContactById(contactId);
 
-        // Assert
         Assert.assertEquals(expectedContact, actualContact);
     }
 
     @Test
     public void testAddContact() {
-        // Arrange
         Long userId = 1L;
         User user = new User();
         user.setId(userId);
@@ -81,16 +74,13 @@ public class ContactServiceImplTest {
         Mockito.when(userRepository.findById(userId)).thenReturn(Optional.of(user));
         Mockito.when(contactRepository.findAllByOwnerOfContact(user)).thenReturn(Collections.emptyList());
 
-        // Act
         contactService.addContact(contact, userId);
 
-        // Assert
         Mockito.verify(contactRepository).save(contact);
     }
 
     @Test(expected = UserWithProvidedContactNameAlreadyExists.class)
     public void testAddContactWithExistingName() {
-        // Arrange
         Long userId = 1L;
         User user = new User();
         user.setId(userId);
@@ -105,10 +95,8 @@ public class ContactServiceImplTest {
         Mockito.when(userRepository.findById(userId)).thenReturn(Optional.of(user));
         Mockito.when(contactRepository.findAllByOwnerOfContact(user)).thenReturn(existingContacts);
 
-        // Act
         contactService.addContact(contact, userId);
     }
 
-    // Add more test cases for the other methods in ContactServiceImpl
 
 }

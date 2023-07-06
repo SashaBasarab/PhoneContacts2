@@ -58,7 +58,6 @@ public class AuthServiceImplTest {
 
     @Test
     public void testAuthenticateUser() {
-        // Arrange
         String login = "testuser";
         String password = "testpassword";
         LoginAndSignupRequest loginAndSignupRequest = new LoginAndSignupRequest();
@@ -72,20 +71,15 @@ public class AuthServiceImplTest {
                 UserDetailsImpl userDetails = new UserDetailsImpl(1L, login, password, authorities);
         List<String> roles = Collections.singletonList("USER_ROLE");
 
-        // Mock the authenticationManager
         Mockito.when(authenticationManager.authenticate(Mockito.any(UsernamePasswordAuthenticationToken.class)))
                 .thenReturn(authentication);
 
-        // Mock the jwtUtils
         Mockito.when(jwtUtils.generateJwtToken(Mockito.any(Authentication.class))).thenReturn(jwt);
 
-        // Mock the Principal
         Mockito.when(authentication.getPrincipal()).thenReturn(userDetails);
 
-        // Act
         JwtResponse result = authService.authenticateUser(loginAndSignupRequest);
 
-        // Assert
         Assert.assertNotNull(result);
         Assert.assertEquals(jwt, result.getToken());
         Assert.assertEquals(userDetails.getId(), result.getId());
@@ -97,7 +91,6 @@ public class AuthServiceImplTest {
 
     @Test
     public void testRegisterUser() {
-        // Arrange
         String login = "testuser";
         String password = "testpassword";
         LoginAndSignupRequest loginAndSignupRequest = new LoginAndSignupRequest();
@@ -110,15 +103,12 @@ public class AuthServiceImplTest {
         Set<Role> roles = new HashSet<>();
         roles.add(userRole);
 
-        // Mock the userRepository
         Mockito.when(userRepository.existsByLogin(login)).thenReturn(false);
         Mockito.when(roleRepository.findByName(UserRole.USER_ROLE)).thenReturn(Optional.of(userRole));
         Mockito.when(userRepository.save(Mockito.any(User.class))).thenReturn(user);
 
-        // Act
         authService.registerUser(loginAndSignupRequest);
 
-        // Assert
         Mockito.verify(userRepository, Mockito.times(1)).existsByLogin(login);
         Mockito.verify(roleRepository, Mockito.times(1)).findByName(UserRole.USER_ROLE);
         Mockito.verify(userRepository, Mockito.times(1)).save(Mockito.any(User.class));
@@ -126,19 +116,15 @@ public class AuthServiceImplTest {
 
     @Test(expected = UserAlreadyExists.class)
     public void testRegisterUser_UserAlreadyExists() {
-        // Arrange
         String login = "testuser";
         String password = "testpassword";
         LoginAndSignupRequest loginAndSignupRequest = new LoginAndSignupRequest();
         loginAndSignupRequest.setLogin(login);
         loginAndSignupRequest.setPassword(password);
 
-        // Mock the userRepository
         Mockito.when(userRepository.existsByLogin(login)).thenReturn(true);
 
-        // Act
         authService.registerUser(loginAndSignupRequest);
 
-        // Assert (Expecting UserAlreadyExists exception)
     }
 }

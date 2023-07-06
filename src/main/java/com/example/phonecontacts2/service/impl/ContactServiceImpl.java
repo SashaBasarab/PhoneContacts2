@@ -62,10 +62,10 @@ public class ContactServiceImpl implements ContactService {
     }
 
     @Override
-    public void updateContact(Long contactId, Contact contact) {
+    public void updateContact(Long contactId, Contact contact, Long userId) {
         Contact updatedContact = contactRepository.findById(contactId)
                 .orElseThrow(() -> new NoSuchContactException("Contact with id: " + contactId + " does not exist!"));
-        User user = userRepository.findById(contact.getOwnerOfContact().getId()).orElseThrow(() -> new NoSuchUserException("User with id: " + contact.getOwnerOfContact().getId() + " does not exist!"));
+        User user = userRepository.findById(userId).orElseThrow(() -> new NoSuchUserException("User with id: " + userId + " does not exist!"));
         List<Contact> existingContactsOfUser = contactRepository.findAllByOwnerOfContact(user);
         for (Contact existingContact : existingContactsOfUser) {
             if (existingContact.getName().equals(contact.getName())) {
@@ -89,7 +89,7 @@ public class ContactServiceImpl implements ContactService {
         updatedContact.setName(contact.getName());
         updatedContact.setEmails(contact.getEmails());
         updatedContact.setPhoneNumbers(contact.getPhoneNumbers());
-        updatedContact.setOwnerOfContact(contact.getOwnerOfContact());
+        updatedContact.setOwnerOfContact(user);
         contactRepository.save(updatedContact);
 
     }

@@ -36,19 +36,14 @@ public class AuthControllerTest {
     @Test
     public void testAuthenticateUser() {
         LoginAndSignupRequest request = new LoginAndSignupRequest();
-        // Set up any necessary data for the test
 
-        // Mock the authService method
         JwtResponse expectedResponse = new JwtResponse();
         Mockito.when(authService.authenticateUser(Mockito.eq(request))).thenReturn(expectedResponse);
 
-        // Perform the request
         ResponseEntity<JwtResponse> response = authController.authenticateUser(request);
 
-        // Verify that the authService method was called with the expected argument
         Mockito.verify(authService).authenticateUser(request);
 
-        // Verify the response
         Assert.assertEquals(HttpStatus.OK, response.getStatusCode());
         Assert.assertEquals(expectedResponse, response.getBody());
     }
@@ -56,18 +51,13 @@ public class AuthControllerTest {
     @Test
     public void testRegisterUser() {
         LoginAndSignupRequest request = new LoginAndSignupRequest();
-        // Set up any necessary data for the test
 
-        // Mock the authService method
         Mockito.doNothing().when(authService).registerUser(Mockito.eq(request));
 
-        // Perform the request
         ResponseEntity<?> response = authController.registerUser(request);
 
-        // Verify that the authService method was called with the expected argument
         Mockito.verify(authService).registerUser(request);
 
-        // Verify the response
         Assert.assertEquals(HttpStatus.OK, response.getStatusCode());
         Assert.assertEquals("User registered successfully!", ((MessageResponse) response.getBody()).getMessage());
     }
@@ -75,18 +65,13 @@ public class AuthControllerTest {
     @Test
     public void testRegisterUser_UserAlreadyExists() {
         LoginAndSignupRequest request = new LoginAndSignupRequest();
-        // Set up any necessary data for the test
 
-        // Mock the authService method to throw UserAlreadyExists exception
         Mockito.doThrow(UserAlreadyExists.class).when(authService).registerUser(Mockito.eq(request));
 
-        // Perform the request
         ResponseEntity<?> response = authController.registerUser(request);
 
-        // Verify that the authService method was called with the expected argument
         Mockito.verify(authService).registerUser(request);
 
-        // Verify the response
         Assert.assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         Assert.assertEquals("Error: login or password are already taken!", ((MessageResponse) response.getBody()).getMessage());
     }

@@ -25,7 +25,7 @@ public class Contact {
     @ElementCollection
     private List<@Pattern(regexp = "\\+380\\d{9}", message = "Phone number must be in the format +380XXXXXXXXX")String> phoneNumbers;
 
-//    @JsonIgnore
+    @JsonIgnore
     @ManyToOne
     private User ownerOfContact;
 
